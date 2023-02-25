@@ -1,6 +1,6 @@
-#include "PaintWindow.h"
-#include "FrameAnalyzer.h"
-#include "FramePreprocessor.h"
+#include "../includes/PaintWindow.h"
+#include "../includes/FrameAnalyzer.h"
+#include "../includes/FramePreprocessor.h"
 
 #include <filesystem>
 

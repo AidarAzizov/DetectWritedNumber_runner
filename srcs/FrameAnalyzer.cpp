@@ -1,4 +1,4 @@
-#include "FrameAnalyzer.h"
+#include "../includes/FrameAnalyzer.h"
 
 /****  Torch includes  ****/
 #include <torch/torch.h>

@@ -14,7 +14,7 @@ tran = transforms.Compose([
 model = torch.load("/Users/aidarazizov/PycharmProjects/teest/mnist_full_model.pt")
 model.eval()
 
-img = Image.open("/Users/aidarazizov/CLionProjects/OpenCV_tests/MNIST_formatted.png")
+img = Image.open("/MNIST_formatted.png")
 img = tran(img)
 img *= 255.
 

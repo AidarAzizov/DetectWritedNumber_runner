@@ -9,7 +9,7 @@ find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS} ")
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-add_executable(OpenCV_tests main.cpp FrameAnalyzer.cpp FrameAnalyzer.h PaintWindow.cpp PaintWindow.h FramePreprocessor.cpp FramePreprocessor.h)
+add_executable(OpenCV_tests srcs/main.cpp srcs/FrameAnalyzer.cpp includes/FrameAnalyzer.h srcs/PaintWindow.cpp includes/PaintWindow.h srcs/FramePreprocessor.cpp includes/FramePreprocessor.h)
 
 
 target_link_libraries( OpenCV_tests  ${TORCH_LIBRARIES})
