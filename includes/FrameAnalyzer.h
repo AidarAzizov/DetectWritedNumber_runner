@@ -9,12 +9,12 @@
 #include <opencv2/opencv.hpp>
 /****  OpenCV includes  ****/
 
+constexpr int kErrorPredict = -1;
 
 // torch libs will be invisible for include this module
 class ShellCNN;
 
 class CFrameAnalyzer {
-
 public:
     CFrameAnalyzer(const std::string& sPath);
     ~CFrameAnalyzer();
@@ -22,6 +22,8 @@ public:
     /// For number classification cvImage must have [28,28] size
     /// like MNISTNet images
     std::vector<int64_t> Analyze(const std::vector<cv::Mat>& cvImages) const noexcept;
+
+    void Test() const noexcept;
 
 private:
     std::unique_ptr<ShellCNN> m_pModel;

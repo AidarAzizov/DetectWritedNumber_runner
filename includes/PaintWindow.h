@@ -21,7 +21,6 @@ enum ePaintedImageAction : uint8_t {
 class CFrameAnalyzer;
 
 class CPaintWindow {
-
 private:
     static const cv::Mat backgroundImage;
 
@@ -33,10 +32,11 @@ public:
     ~CPaintWindow();
 
     int Run() noexcept;
+    void Test() const noexcept;
 
 private:
     std::unique_ptr<CFrameAnalyzer> m_analyzer;
-    const ePaintedImageAction m_eImageAction;
+    const ePaintedImageAction       m_eImageAction;
 
     bool    m_bDrawMode;
     cv::Mat m_showingImage;

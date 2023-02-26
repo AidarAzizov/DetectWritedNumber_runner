@@ -5,5 +5,4 @@
 
 bool MNISTRequirePreprocessing(const cv::Mat& input, cv::Mat& output);
 
-
 #endif //OPENCV_TESTS_FRAMEPREPROCESSOR_H
