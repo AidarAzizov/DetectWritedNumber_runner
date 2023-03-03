@@ -13,7 +13,7 @@ Example:
 ----------------
 **Input:**
 
-<img alt="7" height="256" src="predicted/7___2023-02-25_03:16:46.png" width="256"/>
+<img alt="7" height="256" src="test/base_7.png" width="256"/>
 
 **Output:**
 
@@ -95,11 +95,11 @@ outputs = outputs.argmax(1).toType(torch::ScalarType::Long);
 1. Поддержка расширенных настроек через конфигурационный файл.
 2. Логгирование полезной информации.
 3. Работа из-под коробки. Скачали, собрали, запустили, нарисовали.
-4. Threshold для выхода из нейросети, чтобы нарисованные человечки не предсказывались как 4 или 8 :)
+4. ~~Threshold для выхода из нейросети, чтобы нарисованные человечки не предсказывались как 4 или 8 :)~~
 
 
-[1]: https://github.com/AidarAzizov
-[2]: https://github.com/AidarAzizov
+[1]: https://github.com/AidarAzizov/DetectWritedNumber_learning
+[2]: https://github.com/AidarAzizov/DetectWritedNumber_runner
 [3]: https://ru.wikipedia.org/wiki/Цифры
 [4]: https://ru.wikipedia.org/wiki/Размытие_по_Гауссу
 [5]: https://gamedev.ru/code/terms/Bounding_Box
