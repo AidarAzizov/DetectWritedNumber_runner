@@ -1,4 +1,7 @@
-#include "FrameAnalyzer.h"
+#include "../includes/FrameAnalyzer.h"
+
+#include "../includes/FramePreprocessor.h"
+
 
 /****  Torch includes  ****/
 #include <torch/torch.h>
@@ -13,6 +16,11 @@ namespace
     torch::NoGradGuard noGrad;
 
     const auto deviceType = torch::cuda::is_available() ? torch::kCUDA : torch::kCPU;
+
+    constexpr auto fTrustedThreshold = 10.8028f;
+    const cv::String sFolderWithNumbers    = "../test/numbers";
+    const cv::String sFolderWithNotNumbers = "../test/not numbers";
+
 }
 
 ///////////////////////////
@@ -49,9 +57,37 @@ CFrameAnalyzer::~CFrameAnalyzer() = default;
 ///////////////////////
 ///**** Methods ****///
 ///////////////////////
+void CFrameAnalyzer::Test() const noexcept
+{
+    auto testImpl = [&](const std::string sFolder)
+    {
+        std::vector<cv::String> sFilenames;
+        cv::glob(sFolder, sFilenames);
+
+        for (auto &filename: sFilenames)
+        {
+            cv::Mat number = cv::imread(filename);
+
+            cv::Mat preparedImage;
+            if (MNISTRequirePreprocessing(number, preparedImage))
+            {
+                std::cout << filename << std::endl;
+                Analyze({ preparedImage });
+            }
+        }
+    };
+
+    std::cout << "***** Test start *****" << std::endl;
+
+    testImpl(sFolderWithNumbers);
+    testImpl(sFolderWithNotNumbers);
+
+    std::cout << "***** Test end *****" << std::endl;
+}
+
 std::vector<int64_t> CFrameAnalyzer::Analyze(const std::vector<cv::Mat>& cvImages) const noexcept
 {
-    std::vector<int64_t> predicted;
+    std::vector<int64_t> predicteds;
 
     try
     {
@@ -65,19 +101,33 @@ std::vector<int64_t> CFrameAnalyzer::Analyze(const std::vector<cv::Mat>& cvImage
         inputs = inputs.toType(torch::kFloat);
 
         auto outputs = m_pModel->forward({ inputs }).toTensor();
-        std::cout << "[INFO]\tPredicted - " << outputs << std::endl;
+        std::cout << outputs << std::endl;
 
-        outputs = outputs.argmax(1).toType(torch::ScalarType::Long);
+        auto outputs_argmax     = outputs.argmax(1).toType(torch::ScalarType::Long);
+        const int64_t *outputData   = static_cast<int64_t*>(outputs_argmax.data_ptr());
+        if (outputData)
+        {
+            const int64_t outputCount = outputs_argmax.size(0);
+            const size_t imageCount   = cvImages.size();
+            assert(outputCount == imageCount);
 
-        int64_t *outputData = static_cast<int64_t*>(outputs.data_ptr());
-        int64_t outputCount = outputs.size(0);
-        size_t imageCount   = cvImages.size();
+            predicteds.resize(outputCount);
+            for (size_t i = 0; i < outputCount; i++)
+            {
+                int64_t predictedNumber = outputData[i];
+                auto tnsrProbability    = outputs[i][predictedNumber].toType(torch::ScalarType::Float);
 
-        assert(outputCount == imageCount);
-
-        predicted.resize(outputCount);
-        for (size_t i = 0; i < outputCount; i++)
-            predicted[i] = outputData[i];
+                const float *ptrProbability = static_cast<const float*>(tnsrProbability.data_ptr());
+                if (ptrProbability && ptrProbability[0] > fTrustedThreshold)
+                    predicteds[i] = predictedNumber;
+                else
+                    predicteds[i] = kErrorPredict;
+            }
+        }
+        else
+        {
+            std::cout << "[WARNING]\t" << __FUNCTION__ << " output data from model is empty" << std::endl;
+        }
     }
     catch (c10::Error &except)
     {
@@ -96,6 +146,5 @@ std::vector<int64_t> CFrameAnalyzer::Analyze(const std::vector<cv::Mat>& cvImage
         std::cout << "[ERROR]\t" << __FUNCTION__ << " Unknown exception" << std::endl;
     }
 
-    return predicted;
+    return predicteds;
 }
-

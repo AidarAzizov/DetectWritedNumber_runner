@@ -1,6 +1,6 @@
-#include "PaintWindow.h"
-#include "FrameAnalyzer.h"
-#include "FramePreprocessor.h"
+#include "../includes/PaintWindow.h"
+#include "../includes/FrameAnalyzer.h"
+#include "../includes/FramePreprocessor.h"
 
 #include <filesystem>
 
@@ -79,24 +79,25 @@ void CPaintWindow::mouseHandler(int event, int x, int y) noexcept
             m_bDrawMode = false;
         else if(event == cv::EVENT_RBUTTONDOWN)
         {
-            std::cout << "[INFO]\tStart Analyze process..." << std::endl;
-
             cv::Mat prepared_image;
             std::string sFilename = "not_preprocessed";
             if (MNISTRequirePreprocessing(m_showingImage, prepared_image))
             {
-                std::vector<int64_t> predicted = m_analyzer->Analyze({prepared_image});
+                sFilename = "not_predicted";
 
+                std::vector<int64_t> predicted = m_analyzer->Analyze({prepared_image});
                 if (!predicted.empty())
                 {
                     const int predictedNumber = predicted[0];
-                    sFilename = std::to_string(predictedNumber);
-
-                    std::cout << "[INFO]\tUser painted '" << predictedNumber << "'\n";
-                }
-                else
-                {
-                    sFilename = "not_predicted";
+                    if (predictedNumber != kErrorPredict)
+                    {
+                        std::cout << "[INFO]\tUser painted '" << predictedNumber << "'\n";
+                        sFilename = std::to_string(predictedNumber);
+                    }
+                    else
+                    {
+                        std::cout << "[ERROR]\tUser painted NOT number" << std::endl;
+                    }
                 }
             }
 
@@ -135,6 +136,18 @@ void CPaintWindow::mouseHandler(int event, int x, int y) noexcept
     catch (...)
     {
         std::cout << "[ERROR]\t" << __FUNCTION__ << " Unknown exception" << std::endl;
+    }
+}
+
+void CPaintWindow::Test() const noexcept
+{
+    try
+    {
+        m_analyzer->Test();
+    }
+    catch (...)
+    {
+        ///
     }
 }
 
